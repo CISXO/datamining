@@ -1,0 +1,28 @@
+'YBR073w', 'YGL163c' 3.7 % support
+'YLR371w', 'YGR070w' 4.17 % support
+'YDL134c', 'YDL188c' 3.7 % support
+'YDR328c', 'YDR054c' 3.7 % support
+'YDR328c', 'YDL132w' 3.7 % support
+'YLR433c', 'YKL190w' 3.7 % support
+'YER133w', 'YOR178c' 3.7 % support
+'YMR088c', 'YCL069w' 3.7 % support
+'YOR061w', 'YGL019w' 3.7 % support
+'YIL035c', 'YOR061w' 3.7 % support
+'YOR061w', 'YOR039w' 3.7 % support
+'YDR298c', 'YPL078c' 3.7 % support
+'YDR298c', 'YKL016c' 3.7 % support
+'YER177w', 'YDR099w' 3.7 % support
+'YDR054c', 'YDL132w' 3.7 % support
+'YIL035c', 'YGL019w' 3.7 % support
+'YOR039w', 'YGL019w' 3.7 % support
+'YIL035c', 'YOR039w' 3.7 % support
+'YOR153w', 'YDR011w' 3.7 % support
+'YKL016c', 'YPL078c' 3.7 % support
+'YDR328c', 'YDR054c', 'YDL132w' 3.7 % support
+'YIL035c', 'YOR061w', 'YGL019w' 3.7 % support
+'YOR061w', 'YOR039w', 'YGL019w' 3.7 % support
+'YIL035c', 'YOR061w', 'YOR039w', 'YGL019w' 3.7 % support
+'YIL035c', 'YOR061w', 'YOR039w' 3.7 % support
+'YDR298c', 'YKL016c', 'YPL078c' 3.7 % support
+'YIL035c', 'YOR039w', 'YGL019w' 3.7 % support
+'YIL035c', 'YGL019w', 'YOR039w', 'YOR061w' 3.7 % support

@@ -1,0 +1,27 @@
+frozenset({'YIL035c', 'YOR061w'}) 3.70% support
+frozenset({'YDR054c', 'YDR328c'}) 3.70% support
+frozenset({'YDL134c', 'YDL188c'}) 3.70% support
+frozenset({'YIL035c', 'YOR039w'}) 3.70% support
+frozenset({'YGL019w', 'YOR061w'}) 3.70% support
+frozenset({'YGL019w', 'YOR039w'}) 3.70% support
+frozenset({'YGL163c', 'YBR073w'}) 3.70% support
+frozenset({'YOR039w', 'YOR061w'}) 3.70% support
+frozenset({'YDL132w', 'YDR054c'}) 3.70% support
+frozenset({'YKL016c', 'YPL078c'}) 3.70% support
+frozenset({'YDL132w', 'YDR328c'}) 3.70% support
+frozenset({'YOR178c', 'YER133w'}) 3.70% support
+frozenset({'YGR070w', 'YLR371w'}) 4.17% support
+frozenset({'YDR298c', 'YPL078c'}) 3.70% support
+frozenset({'YDR298c', 'YKL016c'}) 3.70% support
+frozenset({'YGL019w', 'YIL035c'}) 3.70% support
+frozenset({'YDR011w', 'YOR153w'}) 3.70% support
+frozenset({'YDR099w', 'YER177w'}) 3.70% support
+frozenset({'YCL069w', 'YMR088c'}) 3.70% support
+frozenset({'YKL190w', 'YLR433c'}) 3.70% support
+frozenset({'YKL016c', 'YPL078c', 'YDR298c'}) 3.70% support
+frozenset({'YGL019w', 'YIL035c', 'YOR039w'}) 3.70% support
+frozenset({'YGL019w', 'YOR039w', 'YOR061w'}) 3.70% support
+frozenset({'YIL035c', 'YOR039w', 'YOR061w'}) 3.70% support
+frozenset({'YGL019w', 'YIL035c', 'YOR061w'}) 3.70% support
+frozenset({'YDL132w', 'YDR054c', 'YDR328c'}) 3.70% support
+frozenset({'YOR061w', 'YGL019w', 'YIL035c', 'YOR039w'}) 3.70% support
