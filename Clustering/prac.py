@@ -1,108 +1,136 @@
-"""
+# 컴퓨터정보통신공학부 조상필_2019253080
 
-Jeong Hyeon Jo
-
-"""
 import sys
 import time
-
+import random
+import heapq
 import numpy as np
+from decimal import Decimal, getcontext
+from math import *
 
+def get_input_data(filename):
+    input_file = open(filename, 'r')
+    data_list = []
+    
+    for line in input_file:
+        data_list.append([float(x) for x in line.strip().split()])
+        
+    return data_list
 
-def read_data1(filename):
-    data = []
-    with open(filename, 'r') as file:
-        for line in file:
-                line = line.split(':')
-                line = line[1]
-                data.append(list(map(int, line.strip().split(' '))))
-    return data
-
-def read_data2(filename):
-    data = []
-    with open(filename, 'r') as file:
-        for line in file:
-            data.append(list(map(float, line.strip().split('\t'))))
-    return data
-
-def calculate_clust_set(assignment, ground_truth):
-    n = len(ground_truth)
-    jaccard_A = np.zeros((n, n))
-    jaccard_B = np.zeros((n, n))
-
+# gene_data의 각 object끼리의 거리를 계산하여 저장한 배열을 리턴
+def get_all_distance(gene_data):
+    n = len(gene_data)
+    all_distance = [[0 for _ in range(n)] for _ in range(n)]
+    
     for i in range(n):
-        for j in range(i, n):
-            intersection_count = 0
-            union_count = 0
+        for j in range(i+1, n):
+            distance = int(sqrt(sum(pow(a - b, 2) for a, b in zip(gene_data[i], gene_data[j]))) * 10**3) / 10**3
+            all_distance[i][j] = distance
+            all_distance[j][i] = distance
+            
+    return all_distance
 
-            for cluster in assignment:
-                if i in cluster and j in cluster:
-                    intersection_count += 1
-                if i in cluster or j in cluster:
-                    union_count += 1
-
-            jaccard_A[i][j] = jaccard_A[j][i] = intersection_count / union_count
-
-            if i == j:
-                jaccard_B[i][j] = jaccard_A[j][i] = 1
-            elif ground_truth[i][0] < 0 or ground_truth[i][0] != ground_truth[j][0]:
-                jaccard_B[i][j] = jaccard_B[j][i] = 0
+def find_near_medoids(distances, medoids):
+    
+    # 초기 클러스터 구조 설정
+    init_cluster = {medoid: [] for medoid in medoids}
+    
+    # 거리의 총합
+    total_distance = 0
+    # n-k개의 non_medoid들을 medoid와의 거리순으로 정렬할 리스트
+    min_distance_order = []
+    
+    for i in range(len(distances)):
+        
+        min_distance = 10000000000
+        index = 0
+        
+        for medoid in medoids:
+            if i == medoid:  # 본인인 경우 바로 클러스터에 추가
+                index = medoid
+                min_distance = 0
+                break
             else:
-                jaccard_B[i][j] = jaccard_B[j][i] = 1
+                if distances[i][medoid] < min_distance:
+                    min_distance = distances[i][medoid]
+                    index = medoid
+        init_cluster[index].append((i, min_distance))
+        total_distance += min_distance
+        
+        if i != index:
+            min_distance_order.append((min_distance, index, i))
+    
+    min_distance_order.sort(key=lambda x : x[0])
+            
+    return init_cluster, total_distance, min_distance_order
 
-    return jaccard_A, jaccard_B
-# 클러스터는 10개 있으니까 1개의 클러스터씩 반복 수행해서 best_f_measure에 넣는다.
-# 그 1개의 best_f_measure에서 가장 큰 f-measure를 찾아서 f_score에 넣어준다.
-#그렇게 10번 반복하면 f_score 10개가 나오고 그 10개의 평균값을 내주면 된다.
-#값이 두번째 ..... 10개의 f-score이 나온다. 10개가 나오면 평균을 한다.
-def calculate_f_measure(assignment, assignment_set, ground_truth_set):
-    f_score = []  # F-측정값을 저장할 리스트
-    fill = False
-
-    for cluster in assignment:
-        best_f_measure = 0.0
-        for index in cluster:
-            #각각의 클러스터안의 오브젝트가 나옴
-            #cluster index 하나와 ground_truth간의 정밀도와 재현율을 계산해야 한다.
-            common_points = [min(a, b) for a, b in zip(assignment_set[index], ground_truth_set[index]) if
-                             a != 0 and b != 0]
-            seted_A = [x for x in assignment_set[index] if x != 0]
-            seted_B = [y for y in ground_truth_set[index] if y != 0]
-
-            if(len(seted_B) == 0 or len(seted_A) == 0):
-                pass
+def kMedoid(gene_data, k):
+    
+    # 각 object 끼리의 모든 거리 계산 후 저장
+    distances = get_all_distance(gene_data)
+    
+    # 랜덤하게 k개의 medoids 선택 (k = 10)
+    medoids = [261, 257, 164, 306, 270, 108, 242, 432, 341, 396]
+    # medoids_memo에 medoids 기록
+    medoids_memo = set()
+    medoids_memo.update(medoids)
+    
+    # nonmeoids을 가장 가까운 medoids에 assign
+    cluster, total_cost, distances_order = find_near_medoids(distances, medoids)
+    
+    change = True
+    
+    while change:
+        change = False
+        for distance, medoid, non_medoid in distances_order:
+            if non_medoid in medoids_memo:
+                continue
+            
+            # total cost 계산
+            temp = medoid
+            medoids = [non_medoid if x == medoid else x for x in medoids]
+            temp_cluster, temp_total_cost, temp_distance_order = find_near_medoids(distances, medoids)
+            
+            if temp_total_cost < total_cost:
+                cluster = temp_cluster
+                total_cost = temp_total_cost
+                distances_order = temp_distance_order
+                medoids_memo.add(non_medoid)
+                change = True
+                break
             else:
-                precision = len(common_points) / len(seted_A)
-                recall = len(common_points) / len(seted_B)
-                # F-측정 계산
-                if precision + recall > 0:
-                    f = (2 * recall * precision) / (recall + precision)
-                    best_f_measure = max(best_f_measure, f)
-        f_score.append(best_f_measure)
+                medoids = [temp if x == non_medoid else x for x in medoids]
+    
+    return cluster
 
 
-    # 모든 클러스터링 결과에 대한 평균 F-측정 계산
-    average_f_measure = sum(f_score) / len(f_score)
 
-    return average_f_measure
+
+def output_to_file(filename, cluster):
+    file = open(filename, 'w')
+    
+    for key, item in cluster.items():
+        s = str(len(item)) + " : " + ' '.join(str(x[0]) for x in item) + "\n"
+        file.write(s)
+    
+    file.close()    
 
 def main():
-    input_filename = 'assignment3_output.txt'
-    input_filename2 = 'assignment5_input.txt'
+    
+    input_file = 'assignment3_input.txt'
+    output_file_name = "assignment4_output2.txt"
+    gene_data = get_input_data(input_file)
+    start = time.time()
+    result_cluster = kMedoid(gene_data, 10)
+    end = time.time()
+    
+    output_to_file(output_file_name, result_cluster)
 
-    assignment = read_data1(input_filename)
-    ground_truth = read_data2(input_filename2)
-    start_time = time.time()
+    # 수행 시간 출력
+    elapsed_time = end - start
+    print("수행 시간 : {} microsecond".format(elapsed_time * 1e6))
+    
 
-    assignment_set, ground_truth_set = calculate_clust_set(assignment, ground_truth)
-    result = calculate_f_measure(assignment, assignment_set, ground_truth_set)
-
-    end_time = time.time()
-    elapsed_time = end_time - start_time
-
-    print("incident matrices: : " + str(result))
-    print(elapsed_time)
-
+    
 if __name__ == '__main__':
     main()
-

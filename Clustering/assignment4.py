@@ -4,13 +4,14 @@ Jeong Hyeon Jo
 """
 
 
-import numpy as np
 import time
 import random
-
+import numpy as np
 
 def matrix_data(data):
-    return np.linalg.norm(data[:, np.newaxis] - data, axis=2)
+    distance_matrix = np.linalg.norm(data[:, np.newaxis] - data, axis=2)
+    rounded_distance_matrix = np.round(distance_matrix, 3)
+    return rounded_distance_matrix
 
 
 def read_gene_expression_data(filename):
@@ -30,42 +31,39 @@ def init_medoids(distance, k):
 
 def cluster(distance, init_medoid):
     rows = len(distance)
-    clusters = {medoid: [] for medoid in init_medoid}  # 각 init_medoid를 key로 하는 빈 리스트 생성
+    clusters = {medoid: [] for medoid in init_medoid}
+    cur_cost = 0.0
 
     for i in range(rows):
-        min_dist = distance[i][init_medoid[0]]  # 초기값을 첫 번째 메도이드로 설정
-        closest_medoid = init_medoid[0]  # 가장 가까운 메도이드의 인덱스를 저장
+        min_dist = distance[i][init_medoid[0]]
+        closest_medoid = init_medoid[0]
 
         for j in init_medoid:
             if distance[i][j] < min_dist:
                 min_dist = distance[i][j]
                 closest_medoid = j
 
-        clusters[closest_medoid].append(i)  # 데이터 i를 가장 가까운 메도이드의 클러스터에 추가
+        clusters[closest_medoid].append(i)
+        cur_cost += min_dist
 
-    return clusters
-
-
-def cost_sum(distance, clusters):
-    cur_cost = 0.0
-    for key, val in clusters.items():
-        for dist in val:
-            cur_cost += distance[key][dist]
-
-    return round(cur_cost, 3)
-
+    return clusters, round(cur_cost, 3)
 
 # 거리 최소인 값을 리스트로 뽑아주는 함수가 필요
 def min_distance(distance, clusters, exist):
     all_distances = []
-    for key, val in clusters.items():
-        for data_point in val:
-            if data_point not in exist:  # Exclude the medoid itself
-                dist = distance[key][data_point]
-                all_distances.append((key, data_point, dist))
 
-    sorted_distances = sorted(all_distances, key=lambda x: x[2])
-    return sorted_distances
+    for cluster_key, cluster_data in clusters.items():
+        for data_point in cluster_data:
+            if data_point in exist:
+                continue
+
+            dist = distance[cluster_key][data_point]
+            all_distances.append((cluster_key, data_point, dist))
+
+    # 한 번만 정렬을 수행하여 최소 거리를 찾음
+    all_distances.sort(key=lambda x: x[2])
+
+    return all_distances
 
 
 # swap 된 경우 exist_update
@@ -75,34 +73,31 @@ def swap_medoids(min_list, cost, medoids, distance, existed):
     updated = False
     for key, val, dist in min_list:
         for change in range(len(prev_medoid)):
-            if dist ==0:
-                continue
             if prev_medoid[change] == key:
-                prev_medoid[change] = val
-                cur_cluster = cluster(distance, prev_medoid)
-                update_cost = cost_sum(distance, cur_cluster)
+                prev_medoid[change] = val # medoid 교체
+                # cost를 위한 cluster
+                cur_cluster, update_cost = cluster(distance, prev_medoid)
                 if cost > update_cost:
                     updated = True
                     existed.append(val)
+
                     return prev_medoid, update_cost, updated, cur_cluster
                 else:
                     prev_medoid = medoids[:]
-    # this_cost
+
     return prev_medoid, update_cost, updated, cur_cluster
 
 
 def k_medoids(gene, k):
     distance = matrix_data(gene)
     medoids = init_medoids(distance, k)
-    clusters = cluster(distance, medoids)
-
+    clusters, cost = cluster(distance, medoids)
     exist_medoid = list()
     # 미도이드 체크
 
     for key in medoids:
         exist_medoid.append(key)
-    # 2번
-    cost = cost_sum(distance, clusters)  # 확인
+
     min_list = min_distance(distance, clusters, exist_medoid)
 
     update = True
@@ -112,6 +107,7 @@ def k_medoids(gene, k):
         cost = update_cost  # 확인
         clusters = cur_clust
         min_list = min_distance(distance, clusters, exist_medoid)
+    # clusters = cluster(distance, medoids)
 
     return clusters
 

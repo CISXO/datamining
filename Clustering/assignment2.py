@@ -90,7 +90,8 @@ def swap_medoids(min_list, cost, medoids, distance, existed):
 
 def k_medoids(gene, k):
     distance = matrix_data(gene)
-    medoids = init_medoids(distance, k)
+    # medoids = init_medoids(distance, k)
+    medoids = [73, 349, 167, 311, 495, 445, 187, 418, 345, 453]
     clusters, cost = cluster(distance, medoids)
     exist_medoid = list()
     # 미도이드 체크
