@@ -3,6 +3,7 @@ Jeong Hyeon Jo
 
 """
 import collections
+import sys
 import time
 from collections import deque
 
@@ -133,6 +134,7 @@ def Jaccard_index(graph):
 
     return cluster_set
 
+
 def Top_down_Cluster(Graph_set):
     clusters_set = set()  # set을 초기화
     for graph in Graph_set:
@@ -181,8 +183,8 @@ def Sorted_cluster(cluster, filename):
 
 cluster_set = []
 def main():
-    input_filename = 'dataset.txt'
-    output_filename = 'example1.txt'
+    input_filename = sys.argv[1]
+    output_filename = 'assignment6_output.txt'
     start_time = time.time()  # Record the start time
     Graph_set = get_input_data(input_filename)
 
@@ -193,8 +195,6 @@ def main():
     end_time = time.time()  # Record the end time
     elapsed_time = end_time - start_time  # Calculate elapsed time
     print("수행 시간 : {} microsecond".format(elapsed_time * 1e6))
-
-    # print("수행 시간 : {} microsecond".format(elapsed_time))
 
 
 if __name__ == '__main__':
