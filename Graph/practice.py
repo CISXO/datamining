@@ -181,7 +181,7 @@ def Sorted_cluster(cluster, filename):
 
 cluster_set = []
 def main():
-    input_filename = 'dataset.txt'
+    input_filename = 'example.txt'
     output_filename = 'example1.txt'
     start_time = time.time()  # Record the start time
     Graph_set = get_input_data(input_filename)
