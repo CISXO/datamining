@@ -1,4 +1,4 @@
-# datamining
+# datamining Classification
 ## Assignment 8, Pattern-Based (Rule-Based) Classification
 
 
