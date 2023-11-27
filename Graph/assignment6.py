@@ -103,7 +103,6 @@ def Jaccard_index(graph):
             x.remove(node1)
         if y:
             y.remove(node2)
-
         # 한번 체크 엣지 반복 제대로 되었는지
         intersection = len(x.intersection(y))
         union = len(x.union(y))

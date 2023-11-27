@@ -2,6 +2,7 @@
 Jeong Hyeon Jo
 
 """
+# sub_graph에 선택한 노드들의 이미 존재하는 엣지들의 density를 계산한 코드
 import copy
 import time
 

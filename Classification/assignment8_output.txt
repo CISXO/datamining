@@ -1,0 +1,7 @@
+frozenset({'Down', 'ColonCancer'}) 49.00% support
+frozenset({'UP', 'BreastCancer'}) 51.00% support
+frozenset({'BreastCancer', 'Down'}) 51.00% support
+frozenset({'UP', 'ColonCancer'}) 49.00% support
+frozenset({'UP', 'Down'}) 100.00% support
+frozenset({'UP', 'Down', 'ColonCancer'}) 49.00% support
+frozenset({'UP', 'Down', 'BreastCancer'}) 51.00% support
