@@ -1,3 +1,4 @@
+# txt파일의 중복된 데이터 있는지 확인하는 test 코드
 def get_input_data(filename):
     with open(filename, 'r') as input_file:
         data = [line.strip() for line in input_file]
