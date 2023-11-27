@@ -1,7 +1,12 @@
-frozenset({'Down', 'ColonCancer'}) 49.00% support
-frozenset({'UP', 'BreastCancer'}) 51.00% support
-frozenset({'BreastCancer', 'Down'}) 51.00% support
-frozenset({'UP', 'ColonCancer'}) 49.00% support
-frozenset({'UP', 'Down'}) 100.00% support
-frozenset({'UP', 'Down', 'ColonCancer'}) 49.00% support
-frozenset({'UP', 'Down', 'BreastCancer'}) 51.00% support
+frozenset({'BreastCancer'}) → frozenset({'UP'}): 51% support, 100.0% confidence
+frozenset({'ColonCancer'}) → frozenset({'UP'}): 49% support, 100.0% confidence
+frozenset({'BreastCancer'}) → frozenset({'Down'}): 51% support, 100.0% confidence
+frozenset({'ColonCancer'}) → frozenset({'Down'}): 49% support, 100.0% confidence
+frozenset({'UP'}) → frozenset({'Down'}): 100% support, 100.0% confidence
+frozenset({'Down'}) → frozenset({'UP'}): 100% support, 100.0% confidence
+frozenset({'ColonCancer'}) → frozenset({'UP', 'Down'}): 49% support, 100.0% confidence
+frozenset({'UP', 'ColonCancer'}) → frozenset({'Down'}): 49% support, 100.0% confidence
+frozenset({'ColonCancer', 'Down'}) → frozenset({'UP'}): 49% support, 100.0% confidence
+frozenset({'BreastCancer'}) → frozenset({'UP', 'Down'}): 51% support, 100.0% confidence
+frozenset({'BreastCancer', 'UP'}) → frozenset({'Down'}): 51% support, 100.0% confidence
+frozenset({'BreastCancer', 'Down'}) → frozenset({'UP'}): 51% support, 100.0% confidence
