@@ -2,7 +2,7 @@ from math import ceil
 from itertools import combinations
 
 MIN_SUPPORT = 0.3
-
+#confidence 소수 2자리까지 보여주기, gene아이디는 0부터 시작해서 99까지로
 def get_input_data(filename):
     input_file = open(filename, 'r')
     transactions = dict()
@@ -79,12 +79,10 @@ def generate_all_frequent_itemsets(transactions, items, min_sup):
 
         frequent_itemsets[itemset_size] = pruned_itemset
         itemset_size += 1
-
     return frequent_itemsets
 
 def generate_association_rules(frequent_itemsets, transactions, min_confidence):
     rules = []
-
     for itemset_size in frequent_itemsets:
         if itemset_size < 2:
             continue

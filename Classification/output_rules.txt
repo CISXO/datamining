@@ -1,0 +1,4 @@
+{'Down', 'BreastCancer'} → {'UP'}: 51.00% support, 100.00% confidence
+{'BreastCancer', 'UP'} → {'Down'}: 51.00% support, 100.00% confidence
+{'ColonCancer', 'UP'} → {'Down'}: 49.00% support, 100.00% confidence
+{'Down', 'ColonCancer'} → {'UP'}: 49.00% support, 100.00% confidence
