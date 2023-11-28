@@ -75,7 +75,7 @@ def Jaccard_index(graph):
         else:
             minimum_list.append((node2, node1, jaccard_index))
         # jaccard_index를 기준으로 정렬
-    sorted_jaccard_list = sorted(minimum_list, key=lambda x1: (x1[2], tuple(sorted([x1[0], x1[1]]))), reverse=True)
+    sorted_jaccard_list = sorted(minimum_list, key=lambda x1: (x1[2], tuple(sorted([x1[0], x1[1]]))), reverse=False)
     sorted_jaccard_list = [item for item in sorted_jaccard_list if item[2] > 0.1]
     sorted_jaccard_list = [(item[0], item[1]) for item in sorted_jaccard_list]
     return sorted_jaccard_list if len(sorted_jaccard_list) > 9 else None
@@ -83,8 +83,8 @@ def Jaccard_index(graph):
 
 def create_graph(sub_graph):
     sub_set = []
-    for sub in sub_graph:
-        val1, val2 = sub
+    while sub_graph:
+        val1, val2 = sub_graph.pop()
 
         found_graphs = []
         for graph in sub_set:
@@ -154,7 +154,8 @@ def Sorted_cluster(cluster, filename):
 
 
 def main():
-    input_filename = sys.argv[1]
+    # input_filename = sys.argv[1]
+    input_filename = 'dataset.txt'
     output_filename = 'assignment7_output.txt'
     start_time = time.time()  # Record the start time
     Graph_set = get_input_data(input_filename)

@@ -1,7 +1,7 @@
 from math import ceil
 from itertools import combinations
 
-MIN_SUPPORT = 0.3  # 수정: 30%의 최소 지지도
+MIN_SUPPORT = 0.3
 
 def get_input_data(filename):
     input_file = open(filename, 'r')

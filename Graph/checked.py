@@ -20,7 +20,7 @@ def find_duplicates_in_dataset(data):
 
     return duplicates
 
-filename = 'example1.txt'
+filename = 'assignment7_output.txt'
 data = get_input_data(filename)
 result = find_duplicates_in_dataset(data)
 
