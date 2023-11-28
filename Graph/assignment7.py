@@ -14,23 +14,18 @@ def get_input_data(filename):
         for line in input_file:
             val1, val2 = line.strip().split('\t')
 
-            # Find the graph that contains either val1 or val2
             found_graphs = []
             for graph in graph_set:
                 if val1 in graph[0] or val2 in graph[0]:
                     found_graphs.append(graph)
-
-            # If both nodes are not found in any existing graph, create a new graph
             if not found_graphs:
                 new_graph = ({val1, val2}, {(val1, val2)})
                 graph_set.append(new_graph)
             elif len(found_graphs) == 1:
-                # If both nodes are found in the same graph, update the graph
                 found_graph = found_graphs[0]
                 found_graph[0].update({val1, val2})
                 found_graph[1].add((val1, val2))
             else:
-                # If both nodes are found in different graphs, merge the graphs
                 merged_nodes = {val1, val2}
                 merged_edges = {(val1, val2)}
                 for found_graph in found_graphs:
@@ -91,12 +86,10 @@ def create_graph(sub_graph):
             if val1 in graph[0] or val2 in graph[0]:
                 found_graphs.append(graph)
 
-        # If both nodes are not found in any existing graph, create a new graph
         if not found_graphs:
             new_graph = ({val1, val2}, {(val1, val2)})
             sub_set.append(new_graph)
         elif len(found_graphs) == 1:
-            # If both nodes are found in the same graph, update the graph
             check_graph = copy.deepcopy(found_graphs[0])
             check_graph[0].update({val1, val2})
             check_graph[1].add((val1, val2))

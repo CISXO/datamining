@@ -115,7 +115,8 @@ def Jaccard_index(graph):
     sorted_jaccard_list = sorted(minimum_list, key=lambda x: (x[2], tuple(sorted([x[0], x[1]]))), reverse=True)
 
     sorted_jaccard_list = [(item[0], item[1]) for item in sorted_jaccard_list]
-
+    if len(sorted_jaccard_list) > 10:
+        a=1
     while sorted_jaccard_list:
         sorted_jaccard_list.pop()  # 뽑았으니까 그래프 탐색 노드 하나만 잘려나간 경우는 어차피 없애야하니까 상관하지 않음
         if len(sorted_jaccard_list) <= 1:
