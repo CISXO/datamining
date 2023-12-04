@@ -1,0 +1,9 @@
+{gene9 up, gene55 up} → {BreastCancer}: 30.00% support, 61.22% confidence
+{gene55 up, gene2 up} → {BreastCancer}: 30.00% support, 60.00% confidence
+{gene9 up, gene81 down} → {BreastCancer}: 30.00% support, 65.22% confidence
+{gene89 down, gene81 down} → {BreastCancer}: 30.00% support, 61.22% confidence
+{gene25 down, gene89 down} → {BreastCancer}: 32.00% support, 64.00% confidence
+{gene98 down, gene14 down} → {ColonCancer}: 31.00% support, 63.27% confidence
+{gene14 down, gene29 down} → {ColonCancer}: 30.00% support, 60.00% confidence
+{gene60 up, gene14 down} → {ColonCancer}: 33.00% support, 61.11% confidence
+{gene60 up, gene14 down, gene73 up} → {ColonCancer}: 30.00% support, 62.50% confidence

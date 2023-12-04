@@ -1,135 +1,108 @@
-from math import ceil
+"""
+Jeong Hyeon Jo
+"""
 from itertools import combinations
+import sys
+import time
 
-MIN_SUPPORT = 0.3
-#confidence 소수 2자리까지 보여주기, gene아이디는 0부터 시작해서 99까지로
-def get_input_data(filename):
-    input_file = open(filename, 'r')
-    transactions = dict()
-    itemset = set()
-    for line in input_file:
-        splitted = line.split()
-        trans_id = splitted[0]
-        trans_items = splitted[1:]
-        transactions[trans_id] = trans_items
-        itemset.update(trans_items)
-    return transactions, itemset
 
-def support(transactions, itemset):
-    support_count = 0
-    for trans_items in transactions.values():
-        if itemset.issubset(trans_items):
-            support_count += 1
-    return support_count
+def data_input(file_path):
+    with open(file_path, 'r') as file:
+        lines = file.readlines()
+    items = []
+    for line in lines:
+        columns = line.strip().split('\t')
+        gene_values = ['gene{} {}'.format(i - 1, value.lower()) for i, value in enumerate(columns[1:-1], start=1)]
+        disease = columns[-1]
+        itemset = set(gene_values) | {disease}
+        items.append(itemset)
+    return items
 
-def generate_selectively_joined_itemsets(frequent_itemsets, itemset_size):
-    joined_itemsets = set()
-    for itemset1 in frequent_itemsets[itemset_size - 1]:
-        for itemset2 in frequent_itemsets[itemset_size - 1]:
-            if itemset1 != itemset2:
-                joined_itemset = itemset1.union(itemset2)
-                if len(joined_itemset) == itemset_size:
-                    joined_itemsets.add(joined_itemset)
-    return joined_itemsets
 
-def apply_apriori_pruning(selected_itemsets, frequent_itemsets, itemset_size):
-    apriori_pruned_itemsets = set()
-    for itemset in selected_itemsets:
-        is_frequent = True
-        for subset in combinations(itemset, itemset_size - 1):
-            if frozenset(subset) not in frequent_itemsets[itemset_size - 1]:
-                is_frequent = False
-                break
-        if is_frequent:
-            apriori_pruned_itemsets.add(itemset)
-    return apriori_pruned_itemsets
+def apori_frequent_items(items, min_support):
+    frequent_items = {}
+    num = len(items)
+    f_item_counts = {}
+    for itemset in items:
+        for item in itemset:
+            f_item_counts[item] = f_item_counts.get(item, 0) + 1
+    f_items = set()
+    for item, count in f_item_counts.items():
+        if count / num >= min_support:
+            f_items.add(item)
+    current_items = [{item} for item in f_items]
 
-def generate_candidate_itemsets(frequent_itemsets, itemset_size):
-    joined_itemsets = generate_selectively_joined_itemsets(frequent_itemsets, itemset_size)
-    candidate_itemsets = apply_apriori_pruning(joined_itemsets, frequent_itemsets, itemset_size)
-    return candidate_itemsets
+    k = 2
+    while current_items:
+        k_items = []
+        valid = {}
 
-def generate_all_frequent_itemsets(transactions, items, min_sup):
-    frequent_itemsets = dict()
-    itemset_size = 0
-    frequent_itemsets[itemset_size] = [frozenset()]  # Initialize with an empty itemset
+        for i in current_items:
+            for j in current_items:
+                if len(i.union(j)) == k:
+                    k_items.append(i.union(j))
 
-    # Frequent itemsets of size 1
-    itemset_size += 1
-    frequent_itemsets[itemset_size] = list()
+        for itemset in k_items:
+            count = sum(1 for s in items if itemset.issubset(s))
+            if count / num >= min_support:
+                valid[tuple(sorted(itemset))] = count / num
 
-    for item in items:
-        itemset = frozenset([item])
-        itemset_support = support(transactions, itemset)
-        if itemset_support >= min_sup:
-            frequent_itemsets[itemset_size].append(itemset)
+        if not valid:
+            break
+        frequent_items.update(valid)
+        current_items = [set(itemset) for itemset in valid]
+        k += 1
 
-    # Frequent itemsets of greater size
-    itemset_size += 1
+    return frequent_items
 
-    while frequent_itemsets[itemset_size - 1]:
-        frequent_itemsets[itemset_size] = list()
-        candidate_itemsets = generate_candidate_itemsets(frequent_itemsets, itemset_size)
-        pruned_itemset = set()
 
-        for itemset in candidate_itemsets:
-            itemset_support = support(transactions, itemset)
-            if itemset_support >= min_sup:
-                pruned_itemset.add(itemset)
-
-        frequent_itemsets[itemset_size] = pruned_itemset
-        itemset_size += 1
-    return frequent_itemsets
-
-def generate_association_rules(frequent_itemsets, transactions, min_confidence):
+def gene_rules(items, frequent_items, min_confidence):
     rules = []
-    for itemset_size in frequent_itemsets:
-        if itemset_size < 2:
-            continue
-
-        for freq_itemset in frequent_itemsets[itemset_size]:
-            for i in range(1, itemset_size):
-                for antecedent in combinations(freq_itemset, i):
-                    antecedent_set = frozenset(antecedent)
-                    consequent_set = freq_itemset - antecedent_set
-
-                    support_antecedent = support(transactions, antecedent_set)
-                    support_itemset = support(transactions, freq_itemset)
-
-                    confidence = support_itemset / support_antecedent
-
+    diseases = {'BreastCancer', 'ColonCancer'}
+    for itemset, support in frequent_items.items():
+        itemset = set(itemset)
+        for size in range(1, len(itemset)):
+            for comb in combinations(itemset, size):
+                comb_set = set(comb)
+                T_set = itemset - comb_set
+                if not T_set.isdisjoint(diseases):
+                    comb_count = sum(1 for s in items if comb_set.issubset(s))
+                    confidence = support / (comb_count / len(items))
                     if confidence >= min_confidence:
-                        rule = {
-                            "antecedent": antecedent_set,
-                            "consequent": consequent_set,
-                            "support": support_itemset,
-                            "confidence": confidence
-                        }
-                        rules.append(rule)
-
+                        rules.append((comb_set, T_set, support, confidence))
     return rules
 
-def output_rules_to_file(filename, rules):
+
+def output_file(filename, rules):
     with open(filename, 'w') as file:
-        for rule in rules:
-            file.write(f'{rule["antecedent"]} → {rule["consequent"]}: '
-                       f'{rule["support"]}% support, {rule["confidence"]*100}% confidence\n')
+        for gene_set, outcome_set, support, confidence in rules:
+            if len(gene_set) >= 2:
+                gene_str = ', '.join(gene_set)
+                outcome_str = ', '.join(outcome_set)
+                support_percent = support * 100
+                confidence_percent = confidence * 100
+                output_line = f"{{{gene_str}}} → {{{outcome_str}}}: {support_percent:.2f}% support, {confidence_percent:.2f}% confidence\n"
+                file.write(output_line)
+    return 0
+
 
 def main():
-    input_filename = 'dataset.txt'
-    output_filename = 'assignment8_output.txt'
-    cellular_functions, genes_set = get_input_data(input_filename)
+    file_path = sys.argv[1]
+    min_support = 0.30
+    min_confidence = 0.60
+    start = time.time()
 
-    # Find frequent itemsets with 30% minimum support
-    min_sup = ceil(MIN_SUPPORT * len(cellular_functions))
-    frequent_itemsets_table = generate_all_frequent_itemsets(cellular_functions, genes_set, min_sup)
+    items = data_input(file_path)
+    frequent_items = apori_frequent_items(items, min_support)
+    rules = gene_rules(items, frequent_items, min_confidence)
 
-    # Find association rules with 60% minimum confidence
-    min_confidence = 0.6
-    rules = generate_association_rules(frequent_itemsets_table, cellular_functions, min_confidence)
+    output_name = 'assignment8_output.txt'
+    output_file(output_name, rules)
 
-    # Output rules to a file
-    output_rules_to_file(output_filename, rules)
+    end = time.time()
+    elapsed_time = end - start
+    print("수행 시간 : {} microsecond".format(elapsed_time * 1e6))
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

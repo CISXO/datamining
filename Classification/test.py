@@ -1,63 +1,105 @@
-from mlxtend.preprocessing import TransactionEncoder
-from mlxtend.frequent_patterns import apriori, association_rules
+from itertools import combinations
+import sys
+import time
 
 
-# Read the gene expression data from the tab-delimited text file
-def read_data(file_path):
-    data = []
+def data_input(file_path):
     with open(file_path, 'r') as file:
-        for line in file:
-            data.append(line.strip().split('\t'))
-    return data
+        lines = file.readlines()
+    items = []
+    for line in lines:
+        columns = line.strip().split('\t')
+        gene_values = ['gene{} {}'.format(i - 1, value.lower()) for i, value in enumerate(columns[1:-1], start=1)]
+        disease = columns[-1]
+        itemset = set(gene_values) | {disease}
+        items.append(itemset)
+    return items
 
 
-# Find frequent gene-expression/disease sets using the Apriori-like algorithm
-def find_frequent_sets(data, min_support):
-    te = TransactionEncoder()
-    te_ary = te.fit(data).transform(data)
-    df = pd.DataFrame(te_ary, columns=te.columns_)
+def apori_frequent_items(items, min_support):
+    frequent_items = {}
+    num = len(items)
+    f_item_counts = {}
+    for itemset in items:
+        for item in itemset:
+            f_item_counts[item] = f_item_counts.get(item, 0) + 1
+    f_items = set()
+    for item, count in f_item_counts.items():
+        if count / num >= min_support:
+            f_items.add(item)
+    current_items = [{item} for item in f_items]
 
-    frequent_sets = apriori(df, min_support=min_support, use_colnames=True)
+    k = 2
+    while current_items:
+        k_items = []
+        valid = {}
 
-    return frequent_sets
+        for i in current_items:
+            for j in current_items:
+                if len(i.union(j)) == k:
+                    k_items.append(i.union(j))
+
+        for itemset in k_items:
+            count = sum(1 for s in items if itemset.issubset(s))
+            if count / num >= min_support:
+                valid[tuple(sorted(itemset))] = count / num
+
+        if not valid:
+            break
+        frequent_items.update(valid)
+        current_items = [set(itemset) for itemset in valid]
+        k += 1
+
+    return frequent_items
 
 
-# Find association rules with a minimum confidence
-def find_association_rules(frequent_sets, min_confidence):
-    rules = association_rules(frequent_sets, metric="confidence", min_threshold=min_confidence)
-
+def gene_rules(items, frequent_items, min_confidence):
+    rules = []
+    diseases = {'BreastCancer', 'ColonCancer'}
+    for itemset, support in frequent_items.items():
+        itemset = set(itemset)
+        for size in range(1, len(itemset)):
+            for comb in combinations(itemset, size):
+                comb_set = set(comb)
+                T_set = itemset - comb_set
+                if not T_set.isdisjoint(diseases):
+                    comb_count = sum(1 for s in items if comb_set.issubset(s))
+                    confidence = support / (comb_count / len(items))
+                    if confidence >= min_confidence:
+                        rules.append((comb_set, T_set, support, confidence))
     return rules
 
 
-# Filter and print rules with at least two genes in the condition
-def print_rules(rules, output_file):
-    with open(output_file, 'w') as file:
-        for index, row in rules.iterrows():
-            antecedents = row['antecedents']
-            if len(antecedents) >= 2:
-                file.write(
-                    f"{set(antecedents)} → {set(row['consequents'])}: {row['support'] * 100:.2f}% support, {row['confidence'] * 100:.2f}% confidence\n")
+def output_file(filename, rules):
+    with open(filename, 'w') as file:
+        for gene_set, outcome_set, support, confidence in rules:
+            if len(gene_set) >= 2:
+                gene_str = ', '.join(gene_set)
+                outcome_str = ', '.join(outcome_set)
+                support_percent = support * 100
+                confidence_percent = confidence * 100
+                output_line = f"{{{gene_str}}} → {{{outcome_str}}}: {support_percent:.2f}% support, {confidence_percent:.2f}% confidence\n"
+                file.write(output_line)
+    return 0
+
+
+def main():
+    file_path = sys.argv[1]
+    min_support = 0.30
+    min_confidence = 0.60
+    start = time.time()
+
+    items = data_input(file_path)
+    frequent_items = apori_frequent_items(items, min_support)
+    rules = gene_rules(items, frequent_items, min_confidence)
+
+    output_name = 'assignment8_output.txt'
+    output_file(output_name, rules)
+
+    end = time.time()
+    elapsed_time = end - start
+    print("수행 시간 : {} microsecond".format(elapsed_time * 1e6))
 
 
 if __name__ == "__main__":
-    import pandas as pd
-
-    # Provide the path to your gene expression data file
-    data_file_path = "dataset.txt"
-
-    # Minimum support and confidence thresholds
-    min_support = 0.3
-    min_confidence = 0.6
-
-    # Read data
-    gene_data = read_data(data_file_path)
-
-    # Find frequent gene-expression/disease sets
-    frequent_sets = find_frequent_sets(gene_data, min_support)
-
-    # Find association rules
-    rules = find_association_rules(frequent_sets, min_confidence)
-
-    # Print rules with at least two genes in the condition
-    output_file_path = "output_rules.txt"
-    print_rules(rules, output_file_path)
+    main()
