@@ -7,6 +7,7 @@ import sys
 import time
 from collections import deque
 
+## 20minute
 
 def get_input_data(filename):
     with open(filename, 'r') as input_file:
