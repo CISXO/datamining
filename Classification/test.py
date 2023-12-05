@@ -1,3 +1,6 @@
+"""
+Jeong Hyeon Jo
+"""
 from itertools import combinations
 import sys
 import time
@@ -16,41 +19,29 @@ def data_input(file_path):
     return items
 
 
-def apori_frequent_items(items, min_support):
-    frequent_items = {}
-    num = len(items)
-    f_item_counts = {}
-    for itemset in items:
-        for item in itemset:
-            f_item_counts[item] = f_item_counts.get(item, 0) + 1
-    f_items = set()
-    for item, count in f_item_counts.items():
-        if count / num >= min_support:
-            f_items.add(item)
-    current_items = [{item} for item in f_items]
+def count_itemsets(items, itemset):
+    count = 0
+    for s in items:
+        if itemset.issubset(s):
+            count += 1
 
-    k = 2
-    while current_items:
-        k_items = []
-        valid = {}
+    return count
 
-        for i in current_items:
-            for j in current_items:
-                if len(i.union(j)) == k:
-                    k_items.append(i.union(j))
 
-        for itemset in k_items:
-            count = sum(1 for s in items if itemset.issubset(s))
-            if count / num >= min_support:
-                valid[tuple(sorted(itemset))] = count / num
+def generate_k_items(current_items, k):
+    result = []
+    for key1, val1 in enumerate(current_items):
+        for key2, val2 in enumerate(current_items):
+            if key1 == key2:
+                continue
+            if key1 > key2:
+                continue
+            union_result = val1.union(val2)
+            if len(union_result) == k:
+                result.append(union_result)
 
-        if not valid:
-            break
-        frequent_items.update(valid)
-        current_items = [set(itemset) for itemset in valid]
-        k += 1
+    return result
 
-    return frequent_items
 
 
 def gene_rules(items, frequent_items, min_confidence):
@@ -63,11 +54,40 @@ def gene_rules(items, frequent_items, min_confidence):
                 comb_set = set(comb)
                 T_set = itemset - comb_set
                 if not T_set.isdisjoint(diseases):
-                    comb_count = sum(1 for s in items if comb_set.issubset(s))
+                    comb_count = count_itemsets(items, comb_set)
                     confidence = support / (comb_count / len(items))
                     if confidence >= min_confidence:
                         rules.append((comb_set, T_set, support, confidence))
     return rules
+
+def filter_datas_items(items, k_items, min_support, num):
+    datas_items = {}
+    for itemset in k_items:
+        count = count_itemsets(items, itemset)
+        support = count / num
+        if support >= min_support:
+            datas_items[tuple(sorted(itemset))] = support
+    return datas_items
+
+def apriori_frequent_items(items, min_support):
+    frequent_items = {}
+    num = len(items)
+    f_item_counts = {}
+    for itemset in items:
+        for item in itemset:
+            f_item_counts[item] = f_item_counts.get(item, 0) + 1
+    f_items = {item for item, count in f_item_counts.items() if count / num >= min_support}
+    current_items = [{item} for item in f_items]
+    while current_items:
+        k_items = generate_k_items(current_items, len(current_items[0]) + 1)
+        datas = filter_datas_items(items, k_items, min_support, num)
+        if not datas:
+            break
+        frequent_items.update(datas)
+        current_items = [set(itemset) for itemset in datas]
+    return frequent_items
+
+
 
 
 def output_file(filename, rules):
@@ -84,13 +104,13 @@ def output_file(filename, rules):
 
 
 def main():
-    file_path = sys.argv[1]
+    file_path = 'dataset.txt'
     min_support = 0.30
     min_confidence = 0.60
     start = time.time()
 
     items = data_input(file_path)
-    frequent_items = apori_frequent_items(items, min_support)
+    frequent_items = apriori_frequent_items(items, min_support)
     rules = gene_rules(items, frequent_items, min_confidence)
 
     output_name = 'assignment8_output.txt'
