@@ -43,7 +43,6 @@ def generate_k_items(current_items, k):
     return result
 
 
-
 def gene_rules(items, frequent_items, min_confidence):
     rules = []
     diseases = {'BreastCancer', 'ColonCancer'}
@@ -60,6 +59,7 @@ def gene_rules(items, frequent_items, min_confidence):
                         rules.append((comb_set, T_set, support, confidence))
     return rules
 
+
 def filter_datas_items(items, k_items, min_support, num):
     datas_items = {}
     for itemset in k_items:
@@ -69,14 +69,22 @@ def filter_datas_items(items, k_items, min_support, num):
             datas_items[tuple(sorted(itemset))] = support
     return datas_items
 
+
 def apriori_frequent_items(items, min_support):
     frequent_items = {}
     num = len(items)
     f_item_counts = {}
-    for itemset in items:
-        for item in itemset:
+    f_items = set()
+
+    for apritems in items:
+        for item in apritems:
             f_item_counts[item] = f_item_counts.get(item, 0) + 1
-    f_items = {item for item, count in f_item_counts.items() if count / num >= min_support}
+
+    for item, count in f_item_counts.items():
+        support = count / num
+        if support >= min_support:
+            f_items.add(item)
+
     current_items = [{item} for item in f_items]
     while current_items:
         k_items = generate_k_items(current_items, len(current_items[0]) + 1)
@@ -86,8 +94,6 @@ def apriori_frequent_items(items, min_support):
         frequent_items.update(datas)
         current_items = [set(itemset) for itemset in datas]
     return frequent_items
-
-
 
 
 def output_file(filename, rules):

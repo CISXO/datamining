@@ -1,9 +1,9 @@
-{gene7 up, gene53 up} → {BreastCancer}: 30.00% support, 61.22% confidence
 {gene0 up, gene53 up} → {BreastCancer}: 30.00% support, 60.00% confidence
-{gene96 down, gene12 down} → {ColonCancer}: 31.00% support, 63.27% confidence
-{gene7 up, gene79 down} → {BreastCancer}: 30.00% support, 65.22% confidence
-{gene87 down, gene79 down} → {BreastCancer}: 30.00% support, 61.22% confidence
-{gene12 down, gene27 down} → {ColonCancer}: 30.00% support, 60.00% confidence
-{gene87 down, gene23 down} → {BreastCancer}: 32.00% support, 64.00% confidence
+{gene79 down, gene87 down} → {BreastCancer}: 30.00% support, 61.22% confidence
+{gene79 down, gene7 up} → {BreastCancer}: 30.00% support, 65.22% confidence
+{gene7 up, gene53 up} → {BreastCancer}: 30.00% support, 61.22% confidence
+{gene23 down, gene87 down} → {BreastCancer}: 32.00% support, 64.00% confidence
+{gene27 down, gene12 down} → {ColonCancer}: 30.00% support, 60.00% confidence
 {gene12 down, gene58 up} → {ColonCancer}: 33.00% support, 61.11% confidence
+{gene12 down, gene96 down} → {ColonCancer}: 31.00% support, 63.27% confidence
 {gene12 down, gene58 up, gene71 up} → {ColonCancer}: 30.00% support, 62.50% confidence

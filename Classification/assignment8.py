@@ -39,10 +39,7 @@ def generate_k_items(current_items, k):
             union_result = val1.union(val2)
             if len(union_result) == k:
                 result.append(union_result)
-
     return result
-
-
 
 def gene_rules(items, frequent_items, min_confidence):
     rules = []
@@ -54,30 +51,53 @@ def gene_rules(items, frequent_items, min_confidence):
                 comb_set = set(comb)
                 T_set = itemset - comb_set
                 if not T_set.isdisjoint(diseases):
-                    comb_count = count_itemsets(items, comb_set)
-                    confidence = support / (comb_count / len(items))
-                    if confidence >= min_confidence:
-                        rules.append((comb_set, T_set, support, confidence))
-    return rules
+                    rules.append((comb_set, T_set, support))
+    filtered_rules = calculate_confidence(items, rules, min_confidence)
+
+    return filtered_rules
+
+def calculate_confidence(items, rules, min_confidence):
+    filtered_rules = []
+
+    for rule in rules:
+        comb_set, T_set, support = rule
+        comb_count = count_itemsets(items, comb_set)
+        confidence = support / (comb_count / len(items))
+
+        if confidence >= min_confidence:
+            filtered_rules.append((comb_set, T_set, support, confidence))
+
+    return filtered_rules
 
 def filter_datas_items(items, k_items, min_support, num):
     datas_items = {}
+
     for itemset in k_items:
         count = count_itemsets(items, itemset)
         support = count / num
+
         if support >= min_support:
             datas_items[tuple(sorted(itemset))] = support
+
     return datas_items
 
 def apriori_frequent_items(items, min_support):
     frequent_items = {}
     num = len(items)
     f_item_counts = {}
+    f_items = set()
+
     for itemset in items:
         for item in itemset:
-            f_item_counts[item] = f_item_counts.get(item, 0) + 1
-    f_items = {item for item, count in f_item_counts.items() if count / num >= min_support}
+            current_count = f_item_counts.get(item, 0)
+            f_item_counts[item] = current_count + 1
+
+    for item, count in f_item_counts.items():
+        if count / num >= min_support:
+            f_items.add(item)
+
     current_items = [{item} for item in f_items]
+
     while current_items:
         k_items = generate_k_items(current_items, len(current_items[0]) + 1)
         datas = filter_datas_items(items, k_items, min_support, num)
