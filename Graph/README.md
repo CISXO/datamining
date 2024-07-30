@@ -6,7 +6,8 @@ Understanding of hierarchical graph clustering algorithms
 Practice of applying graph clustering techniques to large-scale graph data
 
 Description
-Genetic interaction data are provided to discover gene sets densely connected each other. The densely connected genes are likely to have the same cellular functions. Implement the top-down hierarchical graph clustering algorithm by least common neighbors using a density threshold of 0.4. Your python code should take an input file name as a command-line argument, and return an output file ("assignment6_output.txt") including the gene clusters of size-10 or greater. In an output file, show each cluster at each line in the format of the size and gene names in the cluster, for example, "4: YBR160W YDR224C YPL231W YBR081C". Print the clusters in a decreasing order of their size.
+
+It has been kept private due to copyright.
 
 Top-Down Hierarchical Graph Clustering
 Repeatedly remove an edge whose two ending vertices have the smallest Jaccard index of the sets of their neighbors until the graph is disconnected.
@@ -21,7 +22,8 @@ Understanding of hierarchical graph clustering algorithms
 Practice of applying graph clustering techniques to large-scale graph data
 
 Description
-Genetic interaction data are provided to discover gene sets densely connected each other. The densely connected genes are likely to have the same cellular functions. Implement the bottom-up hierarchical graph clustering algorithm by most common neighbors using a density threshold of 0.4. Your python code should take an input file name as a command-line argument, and return an output file ("assignment7_output.txt") including the gene clusters of size-10 or greater. In an output file, show each cluster at each line in the format of the size and gene names in the cluster, for example, "4: YBR160W YDR224C YPL231W YBR081C". Print the clusters in a decreasing order of their size.
+
+It has been kept private due to copyright.
 
 Bottom-Up Hierarchical Graph Clustering
 Make each vertex of the graph become a single cluster
