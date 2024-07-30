@@ -8,6 +8,7 @@ Practice of finding classification association rules from large-scale data
 Practice of finding sub-dimensional classification rules from high-dimensional data
 
 Description
+
 It has been kept private due to copyright.
 
 Data Set
